@@ -1,12 +1,12 @@
 import sys 
 from PyQt5  import QtCore, QtGui, QtWidgets
-from Gui import *
+from Gui2 import *
 
 
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self,parent)
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_ArtCatalog()
         self.ui.setupUi(self)
 
 

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Adding</class>
+ <widget class="QWidget" name="Adding">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>470</width>
+    <height>164</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>470</width>
+    <height>164</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>470</width>
+    <height>164</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Adding</string>
+  </property>
+  <widget class="QLineEdit" name="name_lineedit">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>11</y>
+     <width>205</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="placeholderText">
+    <string>Name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="comment_lineedit">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>45</y>
+     <width>205</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="placeholderText">
+    <string>Comment</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="path_lineedit">
+   <property name="geometry">
+    <rect>
+     <x>223</x>
+     <y>11</y>
+     <width>205</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="placeholderText">
+    <string>Path</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="data_lineedit">
+   <property name="geometry">
+    <rect>
+     <x>223</x>
+     <y>45</y>
+     <width>205</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="placeholderText">
+    <string>Data in format 12.12.2012</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancel_button">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>223</x>
+     <y>123</y>
+     <width>93</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="add_button">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>223</x>
+     <y>79</y>
+     <width>117</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Add New Art</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="check_button">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>79</y>
+     <width>93</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Сheck</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="clear_button">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>123</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Clear All</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

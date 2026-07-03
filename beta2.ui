@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <widget class="QMainWindow" name="ArtCatalog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -36,7 +36,7 @@
       </column>
       <column>
        <property name="text">
-        <string>Размер</string>
+        <string>Name</string>
        </property>
       </column>
       <column>
@@ -46,12 +46,12 @@
       </column>
       <column>
        <property name="text">
-        <string>Размер</string>
+        <string>Size</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Коментарий</string>
+        <string>Comment</string>
        </property>
       </column>
      </widget>

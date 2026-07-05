@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1036</width>
-    <height>599</height>
+    <width>1000</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,43 +20,18 @@
    <string>ArtCatalog</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QTableWidget" name="tableWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QListWidget" name="listWidget">
       <property name="minimumSize">
        <size>
-        <width>806</width>
+        <width>287</width>
         <height>151</height>
        </size>
       </property>
-      <column>
-       <property name="text">
-        <string>ID</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Date</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Размер</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Коментарий</string>
-       </property>
-      </column>
      </widget>
     </item>
-    <item>
+    <item row="0" column="1">
      <widget class="QGroupBox" name="groupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">

@@ -14,6 +14,7 @@ class AddWindowWidget(QtWidgets.QWidget):
 
     def cancel_windowAW(self):
         self.close()
+        self.clear_allAW()
 
     def clear_allAW(self):
         self.ui.name_lineedit.clear()

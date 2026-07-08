@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>793</width>
+    <width>794</width>
     <height>506</height>
    </rect>
   </property>
@@ -25,7 +25,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QLineEdit" name="name_lineeditW">
+        <widget class="QLineEdit" name="name_lineedit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -43,14 +43,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="name_error_labelV">
+        <widget class="QLabel" name="name_label">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Error</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -67,7 +67,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QLineEdit" name="path_lineeditV">
+        <widget class="QLineEdit" name="path_lineedit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -85,14 +85,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="path_error_labelV">
+        <widget class="QLabel" name="path_label">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Error</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -127,14 +127,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="comment_error_labelV">
+        <widget class="QLabel" name="comment_label">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Error</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -151,7 +151,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QLineEdit" name="data_lineeditV">
+        <widget class="QLineEdit" name="data_lineedit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -169,14 +169,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="data_error_window">
+        <widget class="QLabel" name="data_window">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Error</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -184,7 +184,7 @@
      </widget>
     </item>
     <item row="2" column="0" colspan="2">
-     <widget class="QLabel" name="art_labelV">
+     <widget class="QLabel" name="art_label">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -198,12 +198,12 @@
        </size>
       </property>
       <property name="text">
-       <string>Art label</string>
+       <string/>
       </property>
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QPushButton" name="edit_pushbuttonV">
+     <widget class="QPushButton" name="edit_pushbutton">
       <property name="font">
        <font>
         <pointsize>10</pointsize>
@@ -215,7 +215,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QPushButton" name="save_pushButtonV">
+     <widget class="QPushButton" name="save_pushButton">
       <property name="font">
        <font>
         <pointsize>10</pointsize>

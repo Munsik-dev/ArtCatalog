@@ -19,7 +19,7 @@ class AddWindowWidget(QtWidgets.QWidget):
 
     def clear_allAW(self):
         a = [self.ui.name_lineedit, self.ui.data_lineedit, self.ui.comment_lineedit, self.ui.path_lineedit,
-             self.ui.data_label, self.ui.comment_label, self.ui.name_label, self.ui.path_label]
+             self.ui.data_label, self.ui.comment_label, self.ui.name_label, self.ui.path_label, self.ui.label_finish]
         for line_edit in a:
             line_edit.clear()
             line_edit.setStyleSheet(None)
@@ -28,8 +28,13 @@ class AddWindowWidget(QtWidgets.QWidget):
         n, d, p = self.check_name(), self.check_data(), self.check_path()
         self.ui.comment_lineedit.setStyleSheet("background-color: #B3FFB3; color: black;")
         if n and d and p:
+            self.ui.label_finish.setStyleSheet("background-color: #B3FFB3; color: black;")
+            self.ui.label_finish.setText("  Запись успешно добавлена")
             return True
-        else: return False
+        else:
+            self.ui.label_finish.setStyleSheet("background-color: #FFB3B3; color: black;")
+            self.ui.label_finish.setText("  Не удалось добавить запись") 
+            return False
     
     def check_data(self):
         date = QtCore.QDate.fromString(self.ui.data_lineedit.text(), "dd.MM.yyyy")

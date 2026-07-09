@@ -10,17 +10,29 @@ class AddWindowWidget(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self,parent)
         self.ui = Ui_Adding()
         self.ui.setupUi(self)
-        self.ui.cancel_button.clicked.connect(self.cancel_windowAW)
-        self.ui.clear_button.clicked.connect(self.clear_allAW)
-        self.ui.add_button.clicked.connect(self.check_all)
+        self.setup_connection()
         self.Error_style = "background-color: #FFB3B3; color: black;"
         self.True_style = "background-color: #B3FFB3; color: black;"
 
+    def setup_connection(self):
+        """
+        Функция с хранением всех подключений
+        """
+        self.ui.cancel_button.clicked.connect(self.cancel_windowAW)
+        self.ui.clear_button.clicked.connect(self.clear_allAW)
+        self.ui.add_button.clicked.connect(self.check_all)
+
     def cancel_windowAW(self):
+        """
+        Функция закрывает виджет и очищает все значения строк
+        """
         self.close()
         self.clear_allAW()
 
     def clear_allAW(self):
+        """
+        Функция через цикл очищает весь текст и стили всех lineedit и label
+        """
         a = [self.ui.name_lineedit, self.ui.data_lineedit, self.ui.comment_lineedit, self.ui.path_lineedit,
              self.ui.data_label, self.ui.comment_label, self.ui.name_label, self.ui.path_label, self.ui.label_finish]
         for line_edit in a:
@@ -28,6 +40,10 @@ class AddWindowWidget(QtWidgets.QWidget):
             line_edit.setStyleSheet(None)
 
     def check_all(self):
+        """
+        Функция вызывает  3 функции, которые проверяют правильность ввода данных.
+        В зависимости от результата, меняет оформление label
+        """
         n, d, p = self.check_name(), self.check_data(), self.check_path()
         self.ui.comment_lineedit.setStyleSheet(self.True_style)
         if n and d and p:
@@ -40,6 +56,11 @@ class AddWindowWidget(QtWidgets.QWidget):
             return False
     
     def check_data(self):
+        """
+        Проверяет правильность ввода даты. 
+        В зависимости от результата, меняет оформление label и lineedit. 
+        Возвращает True или False
+        """
         date = QtCore.QDate.fromString(self.ui.data_lineedit.text(), "dd.MM.yyyy")
         if not date.isValid():
             self.ui.data_label.setText("Используйте формат: ДД.ММ.ГГГГ")   
@@ -55,6 +76,11 @@ class AddWindowWidget(QtWidgets.QWidget):
             return True
         
     def check_name(self):
+        """
+        Проверяет наличие введеного имени.
+        В зависимости от результата, меняет оформление label и lineedit.
+        Возвращает True или False
+        """
         if not self.ui.name_lineedit.text():
             self.ui.name_label.setText("Введите название")
             self.ui.name_lineedit.setStyleSheet(self.Error_style)
@@ -65,6 +91,11 @@ class AddWindowWidget(QtWidgets.QWidget):
             return True
         
     def check_path(self):
+        """
+        Проверяет правильность ввода пути к файлу, наличия файла, правильность формата. 
+        В зависимости от результата, меняет оформление label и lineedit. 
+        Возвращает True или False
+        """
         path = self.ui.path_lineedit.text().strip()
         if not path:
             self.ui.path_label.setText("Введите путь к файлу")
@@ -103,6 +134,10 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.pushButton.clicked.connect(self.open_add_window)
     
     def open_add_window(self):
+        """
+        Функция открывает виджет добавления записи.
+        Если виджет уже открыт, то просто активирует его и выводит пользователю.
+        """
         if self.add_window is None:
             self.add_window = AddWindowWidget()
             self.add_window.show()

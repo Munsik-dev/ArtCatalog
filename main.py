@@ -1,8 +1,9 @@
 import sys, os
 import sqlite3
 from PyQt5  import QtCore, QtGui, QtWidgets
-from beta3 import *
+from MainWindow import *
 from AddWindow import *
+from WatchWindow import *
 from validator import Validator
 
 

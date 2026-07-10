@@ -44,6 +44,9 @@ class AddWindowWidget(QtWidgets.QWidget):
 
             new_path, file_size = self.copy_image_to_storage(path, name)
 
+            if new_path is None:
+                return
+
             self.ui.add_button.setEnabled(False)
             self.db.add_art(name, comment, data, file_size, new_path)
             self.art_added.emit()
@@ -113,17 +116,23 @@ class AddWindowWidget(QtWidgets.QWidget):
         И возвращает путь и размер
         """
         storage = "images"
-        os.makedirs(storage, exist_ok=True)
 
-        ext = os.path.splitext(path)[1]
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{name}_{timestamp}{ext}"
-        new_path = os.path.join(storage, filename)
+        try:
+            os.makedirs(storage, exist_ok=True)
 
-        shutil.copy2(path, new_path)
-        size = os.path.getsize(new_path)
+            ext = os.path.splitext(path)[1]
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"{name}_{timestamp}{ext}"
+            new_path = os.path.join(storage, filename)
 
-        return new_path, size
+            shutil.copy2(path, new_path)
+            size = os.path.getsize(new_path)
+
+            return new_path, size
+        
+        except  PermissionError:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", "Нет прав доступа к файлу или папке.")
+            return None, 0
 
     
 class MyWin(QtWidgets.QMainWindow):
@@ -227,6 +236,7 @@ class WatchWindowWidget(QtWidgets.QWidget):
             self.ui.data_lineedit.setText(art[3])
             self.ui.path_lineedit.setText(art[5])
             
+        try:
             pil_image = Image.open(art[5])
             
             label_size = self.ui.art_label.size()
@@ -244,6 +254,14 @@ class WatchWindowWidget(QtWidgets.QWidget):
             pixmap = QtGui.QPixmap.fromImage(image)
 
             self.ui.art_label.setPixmap(pixmap)
+
+        except FileNotFoundError:
+            QtWidgets.QMessageBox.warning(self, "Ошибка", f"Файл изображения не найден:\n{art[5]}")
+            self.ui.art_label.setText("Изображение не найдено")
+
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, "Ошибка", f"Не удалось загрузить изображение:\n{e}")
+            self.ui.art_label.setText("Ошибка загрузки")
     
     def enable_edit(self):
         """
@@ -299,16 +317,25 @@ class WatchWindowWidget(QtWidgets.QWidget):
         self, "Удаление", "Вы уверены, что хотите удалить эту запись?",
         QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
         )
-        if reply == QtWidgets.QMessageBox.Yes:
+        if reply != QtWidgets.QMessageBox.Yes:
+            return
+        
+        try:
             art = self.db.get_art_by_id(self.art_id)
             if art and art[5]:
                 file_path = art[5]
                 if os.path.exists(file_path):
                     os.remove(file_path)
 
+        except SError as e:
+            QtWidgets.QMessageBox.warning(self, "Ошибка", f"Не удалось удалить файл:\n{e}")
+
+        try:
             self.db.delete_art(self.art_id)
             self.art_updated.emit()
             self.close()
+        except sqlite3.Error as e:
+            QtWidgets.QMessageBox.critical(self, "Ошибка БД", f"Не удалось удалить запись:\n{e}")
 
 
 class ArtCatalogBD:

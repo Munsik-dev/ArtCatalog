@@ -342,6 +342,20 @@ class ArtCatalogBD:
     def __init__(self, db_name="database.db"):
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
+        self.create_table()
+
+    def create_table(self):
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS ArtCatalog (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL,
+                Comment TEXT,
+                Data TEXT NOT NULL,
+                Size INTEGER NOT NULL,
+                Path TEXT NOT NULL
+            )
+        """)
+        self.conn.commit()
     
     def add_art(self, name, comment, data, size, path):
         """

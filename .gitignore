@@ -1,3 +1,15 @@
-.vscode/settings.json
-__pycache__
-database.db
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Project
+*.db
+*.log
+*.sqlite3

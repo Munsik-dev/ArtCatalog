@@ -327,7 +327,7 @@ class WatchWindowWidget(QtWidgets.QWidget):
                 if os.path.exists(file_path):
                     os.remove(file_path)
 
-        except SError as e:
+        except OSError as e:
             QtWidgets.QMessageBox.warning(self, "Ошибка", f"Не удалось удалить файл:\n{e}")
 
         try:

@@ -135,6 +135,7 @@ class Ui_WatchWindow(object):
         self.gridLayout.addWidget(self.edit_pushbutton, 5, 0, 1, 2)
 
         self.retranslateUi(WatchWindow)
+        self.save_pushButton.setEnabled(False)
         QtCore.QMetaObject.connectSlotsByName(WatchWindow)
 
     def retranslateUi(self, WatchWindow):

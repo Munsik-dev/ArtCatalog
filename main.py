@@ -3,6 +3,8 @@ import sqlite3
 from datetime import datetime
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
+from PIL import Image
+import io
 from MainWindow import *
 from AddWindow import *
 from WatchWindow import *
@@ -11,7 +13,7 @@ from validator import Validator
 
 class AddWindowWidget(QtWidgets.QWidget):
     art_added = pyqtSignal()
-    
+
     def __init__(self, db, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_Adding()
@@ -43,7 +45,7 @@ class AddWindowWidget(QtWidgets.QWidget):
             new_path, file_size = self.copy_image_to_storage(path, name)
 
             self.ui.add_button.setEnabled(False)
-            new_id = self.db.add_art(name, data, comment, new_path, file_size)
+            new_id = self.db.add_art(name, comment, data, file_size, path)
             self.art_added.emit()
 
     def cancel_windowAW(self):
@@ -132,6 +134,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.setup_connection()
         self.db = ArtCatalogBD()
         self.add_window = None
+        self.watch_window = None
         self.load_list()
 
     def setup_connection(self):
@@ -139,6 +142,7 @@ class MyWin(QtWidgets.QMainWindow):
         Функция с хранением всех подключений
         """
         self.ui.pushButton.clicked.connect(self.open_add_window)
+        self.ui.listWidget.itemDoubleClicked.connect(self.open_watch_window)
     
     def open_add_window(self):
         """
@@ -153,6 +157,25 @@ class MyWin(QtWidgets.QMainWindow):
             self.add_window.show()
         self.add_window.raise_()
         self.add_window.activateWindow()
+
+    def open_watch_window(self, item):
+        """
+        Функция открывает окно предосмотра.
+        Если виджет уже открыт, то просто активирует его и выводит пользователю.
+        """
+        text = item.text()
+        art_id = int(text[1:text.index("]")])
+
+        if self.watch_window is not None:
+            self.watch_window.close()
+
+        self.watch_window = WatchWindowWidget(self.db, art_id)
+        self.watch_window.art_updated.connect(self.load_list)
+        self.watch_window.destroyed.connect(self.load_list)
+        self.watch_window.show()
+        self.watch_window.raise_()
+        self.watch_window.activateWindow()
+
 
     def closeEvent(self, event):
         """
@@ -169,15 +192,20 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.listWidget.clear()
         arts = self.db.get_all_names()
         for art_id, name in arts:
-            self.ui.listWidget.addItem(f"{art_id}) {name}")
+            self.ui.listWidget.addItem(f"[{art_id}]) {name}")
 
 
 class WatchWindowWidget(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    art_updated = pyqtSignal()
+
+    def __init__(self,db, art_id, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
+        self.db = db
+        self.art_id = art_id
         self.ui = Ui_WatchWindow()
         self.ui.setupUi(self)
         self.setup_connection()
+        self.load_art()
         self.Error_style = "background-color: #FFB3B3; color: black;"
         self.True_style = "background-color: #B3FFB3; color: black;"
 
@@ -185,21 +213,88 @@ class WatchWindowWidget(QtWidgets.QWidget):
         """
         Функция с хранением всех подключений на будущее
         """
+        self.ui.edit_pushbutton.clicked.connect(self.enable_edit)
+        self.ui.save_pushButton.clicked.connect(self.save_changes)
+
+    def load_art(self):
+        art = self.db.get_art_by_id(self.art_id)
+        print(art)
+        if art:
+            self.ui.name_lineedit.setText(art[1])
+            self.ui.comment_lineedit.setText(art[2])
+            self.ui.data_lineedit.setText(art[3])
+            self.ui.path_lineedit.setText(art[5])
+            
+            pil_image = Image.open(art[5])
+            
+            label_size = self.ui.art_label.size()
+            pil_image.thumbnail(
+                (label_size.width(), label_size.height()), 
+                Image.Resampling.LANCZOS)
+            
+            buffer = io.BytesIO()
+            pil_image.save(buffer, format="PNG")
+            buffer.seek(0)
+            
+            image = QtGui.QImage()
+            image.loadFromData(buffer.read())
+            buffer.close()
+            pixmap = QtGui.QPixmap.fromImage(image)
+
+            self.ui.art_label.setPixmap(pixmap)
+    
+    def enable_edit(self):
+        self.ui.name_lineedit.setReadOnly(False)
+        self.ui.comment_lineedit.setReadOnly(False)
+        self.ui.data_lineedit.setReadOnly(False)
+
+        self.ui.save_pushButton.setEnabled(True)
+        self.ui.edit_pushbutton.setEnabled(False)
+
+    def save_changes(self):
+        name = self.ui.name_lineedit.text()
+        data = self.ui.data_lineedit.text()
+        comment = self.ui.comment_lineedit.text()
+
+        self.ui.comment_lineedit.setStyleSheet(self.True_style)
+        self.ui.path_lineedit.setStyleSheet(self.True_style)
+
+        name_va, name_err = Validator.check_name(name)
+        data_va, data_err = Validator.check_data(data)
+
+        if name_va:
+            self.ui.name_lineedit.setStyleSheet(self.True_style)
+            self.ui.name_label.setText(None)
+        else:
+            self.ui.name_lineedit.setStyleSheet(self.Error_style)
+            self.ui.name_label.setText(name_err)
         
+        if data_va:
+            self.ui.data_lineedit.setStyleSheet(self.True_style)
+            self.ui.data_window.setText(None)
+        else:
+            self.ui.data_lineedit.setStyleSheet(self.Error_style)
+            self.ui.data_window.setText(data_err)
+
+        if name_va and data_va:
+            self.db.update_art(self.art_id, name, data, comment)
+            self.art_updated.emit()
+            self.ui.save_pushButton.setStyleSheet(self.True_style)
+            self.ui.save_pushButton.setEnabled(False)
 
 class ArtCatalogBD:
     def __init__(self, db_name="database.db"):
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
     
-    def add_art(self, name, data, comment, path, size):
+    def add_art(self, name, comment, data, size, path):
         """
         Получает данные в строковом формате, добавляет о них информацию в бд
         """
         self.cursor.execute("""
             INSERT INTO ArtCatalog (Name, Comment, Data, Size, Path)
             VALUES (?, ?, ?, ?, ?)
-            """, (name, data, comment, path, size))
+            """, (name, comment, data, size, path))
         self.conn.commit()
         return self.cursor.lastrowid
     
@@ -209,7 +304,27 @@ class ArtCatalogBD:
         """
         self.cursor.execute("SELECT ID, Name FROM ArtCatalog")
         return self.cursor.fetchall()
-        
+    
+    def get_art_by_id(self, art_id):
+        """ 
+        Запрос в бд по айди. Возвращает полную запись
+        """
+        self.cursor.execute("SELECT * FROM ArtCatalog WHERE ID = ?", (art_id,))
+        return self.cursor.fetchone()
+    
+    def update_art(self, art_id, name, data, comment):
+        """
+        Обновляет запись в БД по ID.
+        """
+        self.cursor.execute("""
+            UPDATE ArtCatalog
+            SET Name = ?, Data = ?, Comment = ?
+            WHERE ID = ?
+        """, (name, data, comment, art_id))
+        self.conn.commit()
+
+
+
     def close(self):
         """
         Функция закрытия

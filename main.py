@@ -1,5 +1,6 @@
-import sys, os
+import sys, os, shutil
 import sqlite3
+from datetime import datetime
 from PyQt5  import QtCore, QtGui, QtWidgets
 from MainWindow import *
 from AddWindow import *
@@ -22,7 +23,18 @@ class AddWindowWidget(QtWidgets.QWidget):
         """
         self.ui.cancel_button.clicked.connect(self.cancel_windowAW)
         self.ui.clear_button.clicked.connect(self.clear_allAW)
-        self.ui.add_button.clicked.connect(self.check_all)
+        self.ui.add_button.clicked.connect(self.add_entry)
+
+    def add_entry(self):
+        name = self.ui.name_lineedit.text()
+        data = self.ui.data_lineedit.text()
+        path = self.ui.path_lineedit.text()
+        comment = self.ui.comment_lineedit.text()
+
+        if self.check_all():
+            new_path, file_size = self.copy_image_to_storage(path, name)
+            self.ui.add_button.setEnabled(False)
+
 
     def cancel_windowAW(self):
         """
@@ -41,6 +53,7 @@ class AddWindowWidget(QtWidgets.QWidget):
         for line_edit in a:
             line_edit.clear()
             line_edit.setStyleSheet(None)
+        self.ui.add_button.setEnabled(True)
 
     def check_all(self):
         """
@@ -82,12 +95,33 @@ class AddWindowWidget(QtWidgets.QWidget):
             self.ui.label_finish.setText("  Не удалось добавить запись") 
             return False
     
+    def copy_image_to_storage(self, path, name):
+        storage = "images"
+        os.makedirs(storage, exist_ok=True)
+
+        ext = os.path.splitext(path)[1]
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{name}_{timestamp}{ext}"
+        new_path = os.path.join(storage, filename)
+
+        shutil.copy2(path, new_path)
+        size = os.path.getsize(new_path)
+
+        return new_path, size
+
+    
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self,parent)
         self.ui = Ui_ArtCatalog()
         self.ui.setupUi(self)
+        self.setup_connection()
         self.add_window = None
+
+    def setup_connection(self):
+        """
+        Функция с хранением всех подключений
+        """
         self.ui.pushButton.clicked.connect(self.open_add_window)
     
     def open_add_window(self):
@@ -103,8 +137,29 @@ class MyWin(QtWidgets.QMainWindow):
         self.add_window.raise_()
         self.add_window.activateWindow()
 
+
+class WatchWindowWidget(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self,parent)
+        self.ui = Ui_WatchWindow()
+        self.ui.setupUi(self)
+        self.setup_connection()
+        self.Error_style = "background-color: #FFB3B3; color: black;"
+        self.True_style = "background-color: #B3FFB3; color: black;"
+
+    def setup_connection(self):
+        """
+        Функция с хранением всех подключений
+        """
+        
+#class BDManager:
+
+
+
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     myapp = MyWin()
     myapp.show()
     sys.exit(app.exec_())
+

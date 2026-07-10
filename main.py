@@ -217,6 +217,9 @@ class WatchWindowWidget(QtWidgets.QWidget):
         self.ui.save_pushButton.clicked.connect(self.save_changes)
 
     def load_art(self):
+        """
+        Загружает данные в поля ввода в окне предосмотр
+        """
         art = self.db.get_art_by_id(self.art_id)
         print(art)
         if art:
@@ -244,6 +247,9 @@ class WatchWindowWidget(QtWidgets.QWidget):
             self.ui.art_label.setPixmap(pixmap)
     
     def enable_edit(self):
+        """
+        Изменяет состояние полей для редакции названия, даты и тд.
+        """
         self.ui.name_lineedit.setReadOnly(False)
         self.ui.comment_lineedit.setReadOnly(False)
         self.ui.data_lineedit.setReadOnly(False)
@@ -252,6 +258,10 @@ class WatchWindowWidget(QtWidgets.QWidget):
         self.ui.edit_pushbutton.setEnabled(False)
 
     def save_changes(self):
+        """
+        Проводит проверку введеных значений и сохраняет их в бд.
+        Так же добавляет кнопкам стили
+        """
         name = self.ui.name_lineedit.text()
         data = self.ui.data_lineedit.text()
         comment = self.ui.comment_lineedit.text()
@@ -281,6 +291,7 @@ class WatchWindowWidget(QtWidgets.QWidget):
             self.art_updated.emit()
             self.ui.save_pushButton.setStyleSheet(self.True_style)
             self.ui.save_pushButton.setEnabled(False)
+
 
 class ArtCatalogBD:
     def __init__(self, db_name="database.db"):

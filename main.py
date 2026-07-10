@@ -187,10 +187,17 @@ class MyWin(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         """
-        Корректное завершение работы через закрытие
+        Подтверждение завершения работы
         """
-        self.db.close()
-        event.accept()
+        reply = QtWidgets.QMessageBox.question(
+        self, "Выход", "Вы уверены, что хотите выйти?",
+        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+        )
+        if reply == QtWidgets.QMessageBox.Yes:
+            self.db.close()
+            event.accept()
+        else:
+            event.ignore()
 
     def load_list(self):
         """
@@ -230,11 +237,15 @@ class WatchWindowWidget(QtWidgets.QWidget):
         Загружает данные в поля ввода в окне предосмотр
         """
         art = self.db.get_art_by_id(self.art_id)
-        if art:
-            self.ui.name_lineedit.setText(art[1])
-            self.ui.comment_lineedit.setText(art[2])
-            self.ui.data_lineedit.setText(art[3])
-            self.ui.path_lineedit.setText(art[5])
+        if not art:
+            QtWidgets.QMessageBox.warning(self, "Не найдено", f"Запись с ID {self.art_id} не найдена.")
+            self.close()
+            return  
+
+        self.ui.name_lineedit.setText(art[1])
+        self.ui.comment_lineedit.setText(art[2])
+        self.ui.data_lineedit.setText(art[3])
+        self.ui.path_lineedit.setText(art[5])
             
         try:
             pil_image = Image.open(art[5])
@@ -314,9 +325,10 @@ class WatchWindowWidget(QtWidgets.QWidget):
         Функция для удаления записи
         """
         reply = QtWidgets.QMessageBox.question(
-        self, "Удаление", "Вы уверены, что хотите удалить эту запись?",
-        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            self, "Удаление", "Вы уверены, что хотите удалить эту запись?",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
         )
+        
         if reply != QtWidgets.QMessageBox.Yes:
             return
         

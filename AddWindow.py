@@ -151,10 +151,10 @@ class Ui_Adding(object):
     def retranslateUi(self, Adding):
         _translate = QtCore.QCoreApplication.translate
         Adding.setWindowTitle(_translate("Adding", "Adding"))
-        self.name_lineedit.setPlaceholderText(_translate("Adding", "Name"))
-        self.path_lineedit.setPlaceholderText(_translate("Adding", "Path"))
-        self.comment_lineedit.setPlaceholderText(_translate("Adding", "Comment"))
-        self.data_lineedit.setPlaceholderText(_translate("Adding", "Data in format 12.12.2012"))
-        self.add_button.setText(_translate("Adding", "Add New Art"))
-        self.clear_button.setText(_translate("Adding", "Clear All"))
-        self.cancel_button.setText(_translate("Adding", "Cancel"))
+        self.name_lineedit.setPlaceholderText(_translate("Adding", "Имя"))
+        self.path_lineedit.setPlaceholderText(_translate("Adding", "Путь"))
+        self.comment_lineedit.setPlaceholderText(_translate("Adding", "Коментарий"))
+        self.data_lineedit.setPlaceholderText(_translate("Adding", "Дата в формате дд.мм.гггг"))
+        self.add_button.setText(_translate("Adding", "Добавить новый арт"))
+        self.clear_button.setText(_translate("Adding", "Очистить все"))
+        self.cancel_button.setText(_translate("Adding", "Отмена"))

@@ -45,7 +45,7 @@ class AddWindowWidget(QtWidgets.QWidget):
             new_path, file_size = self.copy_image_to_storage(path, name)
 
             self.ui.add_button.setEnabled(False)
-            new_id = self.db.add_art(name, comment, data, file_size, path)
+            self.db.add_art(name, comment, data, file_size, new_path)
             self.art_added.emit()
 
     def cancel_windowAW(self):
@@ -176,7 +176,6 @@ class MyWin(QtWidgets.QMainWindow):
         self.watch_window.raise_()
         self.watch_window.activateWindow()
 
-
     def closeEvent(self, event):
         """
         Корректное завершение работы через закрытие
@@ -192,13 +191,13 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.listWidget.clear()
         arts = self.db.get_all_names()
         for art_id, name in arts:
-            self.ui.listWidget.addItem(f"[{art_id}]) {name}")
+            self.ui.listWidget.addItem(f"[{art_id}] {name}")
 
 
 class WatchWindowWidget(QtWidgets.QWidget):
     art_updated = pyqtSignal()
 
-    def __init__(self,db, art_id, parent=None):
+    def __init__(self, db, art_id, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.db = db
         self.art_id = art_id
@@ -215,13 +214,13 @@ class WatchWindowWidget(QtWidgets.QWidget):
         """
         self.ui.edit_pushbutton.clicked.connect(self.enable_edit)
         self.ui.save_pushButton.clicked.connect(self.save_changes)
+        self.ui.delete_pushbutton.clicked.connect(self.delete_art)
 
     def load_art(self):
         """
         Загружает данные в поля ввода в окне предосмотр
         """
         art = self.db.get_art_by_id(self.art_id)
-        print(art)
         if art:
             self.ui.name_lineedit.setText(art[1])
             self.ui.comment_lineedit.setText(art[2])
@@ -292,6 +291,25 @@ class WatchWindowWidget(QtWidgets.QWidget):
             self.ui.save_pushButton.setStyleSheet(self.True_style)
             self.ui.save_pushButton.setEnabled(False)
 
+    def delete_art(self):
+        """
+        Функция для удаления записи
+        """
+        reply = QtWidgets.QMessageBox.question(
+        self, "Удаление", "Вы уверены, что хотите удалить эту запись?",
+        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+        )
+        if reply == QtWidgets.QMessageBox.Yes:
+            art = self.db.get_art_by_id(self.art_id)
+            if art and art[5]:
+                file_path = art[5]
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+
+            self.db.delete_art(self.art_id)
+            self.art_updated.emit()
+            self.close()
+
 
 class ArtCatalogBD:
     def __init__(self, db_name="database.db"):
@@ -300,7 +318,7 @@ class ArtCatalogBD:
     
     def add_art(self, name, comment, data, size, path):
         """
-        Получает данные в строковом формате, добавляет о них информацию в бд
+        Получает данные в строковом формате, добавляет о них информацию в бд 
         """
         self.cursor.execute("""
             INSERT INTO ArtCatalog (Name, Comment, Data, Size, Path)
@@ -334,18 +352,19 @@ class ArtCatalogBD:
         """, (name, data, comment, art_id))
         self.conn.commit()
 
-
-
     def close(self):
         """
         Функция закрытия
         """
         self.conn.close()
 
-
-
-
-
+    def delete_art(self, art_id):
+        """
+        Функция отправляет запрос на удаление обьекта в бд
+        """
+        self.cursor.execute("DELETE FROM ArtCatalog WHERE ID = ?", (art_id,))
+        self.conn.commit()
+        
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

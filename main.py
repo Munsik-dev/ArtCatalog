@@ -1,7 +1,8 @@
 import sys, os, shutil
 import sqlite3
 from datetime import datetime
-from PyQt5  import QtCore, QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 from MainWindow import *
 from AddWindow import *
 from WatchWindow import *
@@ -9,8 +10,10 @@ from validator import Validator
 
 
 class AddWindowWidget(QtWidgets.QWidget):
+    art_added = pyqtSignal()
+    
     def __init__(self, db, parent=None):
-        QtWidgets.QWidget.__init__(self,parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_Adding()
         self.ui.setupUi(self)
         self.db = db
@@ -41,7 +44,7 @@ class AddWindowWidget(QtWidgets.QWidget):
 
             self.ui.add_button.setEnabled(False)
             new_id = self.db.add_art(name, data, comment, new_path, file_size)
-
+            self.art_added.emit()
 
     def cancel_windowAW(self):
         """
@@ -103,6 +106,10 @@ class AddWindowWidget(QtWidgets.QWidget):
             return False
     
     def copy_image_to_storage(self, path, name):
+        """
+        Получает путь и имя, потом копирует фотографию в внутреннию папку
+        И возвращает путь и размер
+        """
         storage = "images"
         os.makedirs(storage, exist_ok=True)
 
@@ -119,12 +126,13 @@ class AddWindowWidget(QtWidgets.QWidget):
     
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
-        QtWidgets.QMainWindow.__init__(self,parent)
+        QtWidgets.QMainWindow.__init__(self, parent)
         self.ui = Ui_ArtCatalog()
         self.ui.setupUi(self)
         self.setup_connection()
         self.db = ArtCatalogBD()
         self.add_window = None
+        self.load_list()
 
     def setup_connection(self):
         """
@@ -139,6 +147,7 @@ class MyWin(QtWidgets.QMainWindow):
         """
         if self.add_window is None:
             self.add_window = AddWindowWidget(self.db)
+            self.add_window.art_added.connect(self.load_list)
             self.add_window.show()
         else:
             self.add_window.show()
@@ -152,10 +161,20 @@ class MyWin(QtWidgets.QMainWindow):
         self.db.close()
         event.accept()
 
+    def load_list(self):
+        """
+        Функция очищает и обновляет лист с записями из бд
+        автомат
+        """
+        self.ui.listWidget.clear()
+        arts = self.db.get_all_names()
+        for art_id, name in arts:
+            self.ui.listWidget.addItem(f"{art_id}) {name}")
+
 
 class WatchWindowWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
-        QtWidgets.QWidget.__init__(self,parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_WatchWindow()
         self.ui.setupUi(self)
         self.setup_connection()
@@ -164,15 +183,19 @@ class WatchWindowWidget(QtWidgets.QWidget):
 
     def setup_connection(self):
         """
-        Функция с хранением всех подключений
+        Функция с хранением всех подключений на будущее
         """
         
+
 class ArtCatalogBD:
     def __init__(self, db_name="database.db"):
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
     
     def add_art(self, name, data, comment, path, size):
+        """
+        Получает данные в строковом формате, добавляет о них информацию в бд
+        """
         self.cursor.execute("""
             INSERT INTO ArtCatalog (Name, Comment, Data, Size, Path)
             VALUES (?, ?, ?, ?, ?)
@@ -180,7 +203,17 @@ class ArtCatalogBD:
         self.conn.commit()
         return self.cursor.lastrowid
     
+    def get_all_names(self):
+        """
+        Запрос в бд для получения всех имен
+        """
+        self.cursor.execute("SELECT ID, Name FROM ArtCatalog")
+        return self.cursor.fetchall()
+        
     def close(self):
+        """
+        Функция закрытия
+        """
         self.conn.close()
 
 

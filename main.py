@@ -9,10 +9,11 @@ from validator import Validator
 
 
 class AddWindowWidget(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, db, parent=None):
         QtWidgets.QWidget.__init__(self,parent)
         self.ui = Ui_Adding()
         self.ui.setupUi(self)
+        self.db = db
         self.setup_connection()
         self.Error_style = "background-color: #FFB3B3; color: black;"
         self.True_style = "background-color: #B3FFB3; color: black;"
@@ -26,14 +27,20 @@ class AddWindowWidget(QtWidgets.QWidget):
         self.ui.add_button.clicked.connect(self.add_entry)
 
     def add_entry(self):
-        name = self.ui.name_lineedit.text()
-        data = self.ui.data_lineedit.text()
-        path = self.ui.path_lineedit.text()
-        comment = self.ui.comment_lineedit.text()
-
+        """
+        Функция, проверяя правильность значений, копирует картинку 
+        А так же отправляет запрос на создание записи в бд
+        """
         if self.check_all():
+            name = self.ui.name_lineedit.text()
+            data = self.ui.data_lineedit.text()
+            path = self.ui.path_lineedit.text()
+            comment = self.ui.comment_lineedit.text()
+
             new_path, file_size = self.copy_image_to_storage(path, name)
+
             self.ui.add_button.setEnabled(False)
+            new_id = self.db.add_art(name, data, comment, new_path, file_size)
 
 
     def cancel_windowAW(self):
@@ -116,6 +123,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui = Ui_ArtCatalog()
         self.ui.setupUi(self)
         self.setup_connection()
+        self.db = ArtCatalogBD()
         self.add_window = None
 
     def setup_connection(self):
@@ -130,12 +138,19 @@ class MyWin(QtWidgets.QMainWindow):
         Если виджет уже открыт, то просто активирует его и выводит пользователю.
         """
         if self.add_window is None:
-            self.add_window = AddWindowWidget()
+            self.add_window = AddWindowWidget(self.db)
             self.add_window.show()
         else:
             self.add_window.show()
         self.add_window.raise_()
         self.add_window.activateWindow()
+
+    def closeEvent(self, event):
+        """
+        Корректное завершение работы через закрытие
+        """
+        self.db.close()
+        event.accept()
 
 
 class WatchWindowWidget(QtWidgets.QWidget):
@@ -152,7 +167,23 @@ class WatchWindowWidget(QtWidgets.QWidget):
         Функция с хранением всех подключений
         """
         
-#class BDManager:
+class ArtCatalogBD:
+    def __init__(self, db_name="database.db"):
+        self.conn = sqlite3.connect(db_name)
+        self.cursor = self.conn.cursor()
+    
+    def add_art(self, name, data, comment, path, size):
+        self.cursor.execute("""
+            INSERT INTO ArtCatalog (Name, Comment, Data, Size, Path)
+            VALUES (?, ?, ?, ?, ?)
+            """, (name, data, comment, path, size))
+        self.conn.commit()
+        return self.cursor.lastrowid
+    
+    def close(self):
+        self.conn.close()
+
+
 
 
 

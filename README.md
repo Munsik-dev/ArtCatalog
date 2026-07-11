@@ -4,20 +4,19 @@
 ## Запуск проекта
 Разработано на Python 3.11.0. Рекомендуется использовать именно эту версию.
 
-1. Создайте виртуальное окружение: `python -m venv venv` (требуется Python 3.11.0)
-2. Активируйте:
+1. Установите Python 3.11 с [python.org](https://www.python.org/downloads/release/python-3110/)
+2. Создайте виртуальное окружение: `py -3.11 -m venv venv`
+3. Активируйте:
    - Windows: `venv\Scripts\activate`
    - macOS/Linux: `source venv/bin/activate`
-3. Установите зависимости: `pip install -r requirements.txt`
-4. Запустите: `python main.py`
+4. Установите зависимости: `pip install -r requirements.txt`
+5. Запустите: `python main.py`
 
 ## Структура проекта
 
 - `main.py` — Точка входа, главное окно, окна добавления/просмотра
 - `validator.py` — Класс Validator: проверка имени, даты, пути
-- `AddWindow.py` — UI окна добавления записи
-- `WatchWindow.py` — UI окна просмотра/редактирования
-- `MainWindow.py` — UI главного окна
+- `ui.main.py` — UI часть кода главного окна и виджетов
 - `images/` — Папка для загруженных изображений (создается автоматически)
 - `screenshots/` — Скриншоты приложения
 - `database.db` — SQLite база данных (создаётся автоматически)

@@ -6,9 +6,7 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 from PIL import Image
 import io
-from MainWindow import *
-from AddWindow import *
-from WatchWindow import *
+from ui_main import Ui_ArtCatalog, Ui_Adding, Ui_WatchWindow
 from validator import Validator
 
 

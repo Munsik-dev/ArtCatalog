@@ -1,5 +1,6 @@
 import sys, os, shutil
 import sqlite3
+import logging
 from datetime import datetime
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
@@ -10,6 +11,12 @@ from AddWindow import *
 from WatchWindow import *
 from validator import Validator
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s: %(message)s"
+)
+logger = logging.getLogger("ArtCatalog")
 
 class AddWindowWidget(QtWidgets.QWidget):
     art_added = pyqtSignal()
@@ -22,6 +29,7 @@ class AddWindowWidget(QtWidgets.QWidget):
         self.setup_connection()
         self.Error_style = "background-color: #FFB3B3; color: black;"
         self.True_style = "background-color: #B3FFB3; color: black;"
+        logger.info("Запущенно окно создания записей")
 
     def setup_connection(self):
         """
@@ -50,6 +58,7 @@ class AddWindowWidget(QtWidgets.QWidget):
             self.ui.add_button.setEnabled(False)
             self.db.add_art(name, comment, data, file_size, new_path)
             self.art_added.emit()
+            logger.info(f"Добавлена запись: {name}")
 
     def cancel_windowAW(self):
         """
@@ -127,11 +136,13 @@ class AddWindowWidget(QtWidgets.QWidget):
 
             shutil.copy2(path, new_path)
             size = os.path.getsize(new_path)
+            logger.info(f"Изображение скопированно")
 
             return new_path, size
         
         except  PermissionError:
             QtWidgets.QMessageBox.critical(self, "Ошибка", "Нет прав доступа к файлу или папке.")
+            logger.error("Ошибка прав доступа")
             return None, 0
 
     
@@ -145,6 +156,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.add_window = None
         self.watch_window = None
         self.load_list()
+        logger.info("Приложение запущено")
 
     def setup_connection(self):
         """
@@ -195,19 +207,21 @@ class MyWin(QtWidgets.QMainWindow):
         )
         if reply == QtWidgets.QMessageBox.Yes:
             self.db.close()
+            logger.info("Приложение закрыто")
             event.accept()
         else:
             event.ignore()
 
     def load_list(self):
         """
-        Функция очищает и обновляет лист с записями из бд
-        автомат
+        Функция очищает и обновляет лист с записями из бд,
+        после чего автоматически заполняет его новыми записями
         """
         self.ui.listWidget.clear()
         arts = self.db.get_all_names()
         for art_id, name in arts:
             self.ui.listWidget.addItem(f"[{art_id}] {name}")
+        logger.info("Перезагружен лист с записями")
 
 
 class WatchWindowWidget(QtWidgets.QWidget):
@@ -223,6 +237,7 @@ class WatchWindowWidget(QtWidgets.QWidget):
         self.load_art()
         self.Error_style = "background-color: #FFB3B3; color: black;"
         self.True_style = "background-color: #B3FFB3; color: black;"
+        logger.info("Запущено окно предосмотра")
 
     def setup_connection(self):
         """
@@ -268,10 +283,12 @@ class WatchWindowWidget(QtWidgets.QWidget):
 
         except FileNotFoundError:
             QtWidgets.QMessageBox.warning(self, "Ошибка", f"Файл изображения не найден:\n{art[5]}")
+            logger.error("Изображения не обнаружено")
             self.ui.art_label.setText("Изображение не найдено")
 
         except Exception as e:
             QtWidgets.QMessageBox.warning(self, "Ошибка", f"Не удалось загрузить изображение:\n{e}")
+            logger.error("Ошибка загрузки изображения")
             self.ui.art_label.setText("Ошибка загрузки")
     
     def enable_edit(self):
@@ -319,6 +336,7 @@ class WatchWindowWidget(QtWidgets.QWidget):
             self.art_updated.emit()
             self.ui.save_pushButton.setStyleSheet(self.True_style)
             self.ui.save_pushButton.setEnabled(False)
+            logger.info(f"изменена запись с ID - {self.art_id}")
 
     def delete_art(self):
         """
@@ -328,7 +346,7 @@ class WatchWindowWidget(QtWidgets.QWidget):
             self, "Удаление", "Вы уверены, что хотите удалить эту запись?",
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
         )
-        
+
         if reply != QtWidgets.QMessageBox.Yes:
             return
         
@@ -338,16 +356,21 @@ class WatchWindowWidget(QtWidgets.QWidget):
                 file_path = art[5]
                 if os.path.exists(file_path):
                     os.remove(file_path)
+                    logger.info("Фотография удаленна")
 
         except OSError as e:
             QtWidgets.QMessageBox.warning(self, "Ошибка", f"Не удалось удалить файл:\n{e}")
+            logger.error("Ошибка удаления файла")
 
         try:
             self.db.delete_art(self.art_id)
             self.art_updated.emit()
+            logger.info(f"запись с ID - {self.art_id} удаленна")
             self.close()
+
         except sqlite3.Error as e:
             QtWidgets.QMessageBox.critical(self, "Ошибка БД", f"Не удалось удалить запись:\n{e}")
+            logger.error(f"Ошибка удаленния записи")
 
 
 class ArtCatalogBD:

@@ -4,7 +4,7 @@
 ## Запуск проекта
 Разработано на Python 3.11.0. Рекомендуется использовать именно эту версию.
 
-1. Создайте виртуальное окружение: `python -m venv venv`
+1. Создайте виртуальное окружение: `python -m venv venv` (требуется Python 3.11.0)
 2. Активируйте:
    - Windows: `venv\Scripts\activate`
    - macOS/Linux: `source venv/bin/activate`
